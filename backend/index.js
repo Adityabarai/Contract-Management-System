@@ -11,7 +11,7 @@ const Employee = require("./db/employee");
 
 const app = express();
 const jwtKey = "CMS";
-
+ 
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -20,7 +20,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve s
 // Configure multer for file uploads
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "uploads");
+		cb(null, "uploads"); 
 	},
 	filename: (req, file, cb) => {
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -91,15 +91,16 @@ app.post("/add-emp", upload.single("image"), async (req, res) => {
 		const filePath = req.file ? `uploads/${req.file.filename}` : null; // Handle image file path
 
 		const employeeData = {
-			unique: req.body.unique,
+			id: req.body.unique,
 			contractorName: req.body.contractorName,
-			company: req.body.company,
+			vendor: req.body.vendor,
 			email: req.body.email,
 			number: req.body.number,
 			category: req.body.category,
 			starting: req.body.starting,
 			ending: req.body.ending,
-			cost: req.body.cost,
+			expenditure: req.body.expenditure,
+			status: req.body.status,
 			image: filePath,
 		};
 
@@ -122,7 +123,7 @@ app.get("/employee", verifyToken, async (req, res) => {
 		res.send({ result: "No Employee Found" });
 	}
 });
- 
+
 // Get Employee Details by ID
 app.get("/employee/:id", async (req, res) => {
 	const result = await Employee.findById(req.params.id);
@@ -130,8 +131,8 @@ app.get("/employee/:id", async (req, res) => {
 		res.send(result);
 	} else {
 		res.send({ result: "No result found" });
-	}  
-});   
+	}
+});
 
 // Delete Employee
 app.delete("/employee/:id", verifyToken, async (req, res) => {
@@ -171,26 +172,24 @@ app.put(
 );
 
 // Search Employees
-// Search Employees
 app.get("/search/:key", verifyToken, async (req, res) => {
 	const key = req.params.key;
 
 	// Check if the key is a number
 	const isNumeric = !isNaN(key);
 	const searchConditions = [
-		{ unique: { $regex: key, $options: "i" } },
+		{ id: { $regex: key, $options: "i" } },
 		{ contractorName: { $regex: key, $options: "i" } },
-		{ company: { $regex: key, $options: "i" } },
+		{ vendor: { $regex: key, $options: "i" } },
 		{ email: { $regex: key, $options: "i" } },
 		{ number: { $regex: key, $options: "i" } },
 		{ category: { $regex: key, $options: "i" } },
-		{ starting: { $regex: key } },
-		{ ending: { $regex: key } },
+		{ status: { $regex: key, $options: "i" } },
 	];
 
 	// If it's a numeric search, add the cost to the query
 	if (isNumeric) {
-		const cost = parseFloat(key);
+		const cost = parseFloat(key); 
 		searchConditions.push({ cost });
 	}
 
@@ -204,7 +203,6 @@ app.get("/search/:key", verifyToken, async (req, res) => {
 		res.status(500).send({ error: "Search failed" });
 	}
 });
-
 
 // Start Server
 app.listen(5000, () => {

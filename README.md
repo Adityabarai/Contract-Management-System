@@ -1,7 +1,7 @@
 Contract Management System
 
 Overview
-
+  
 The Contract Management System is a full-stack web application designed to efficiently manage contracts. It allows users to create, update, store, and track contract-related data with user authentication and authorization features.
 
 Features

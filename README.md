@@ -1,4 +1,4 @@
-Contract Management System
+<h1>Contract Management System</h1>
 
 Overview
   
